@@ -33,12 +33,20 @@ mkdir -p /opt/run4j-agent
 cd /opt/run4j-agent
 
 
-# Download latest release JAR dynamically from GitHub
+# Fetch latest .jar URL from GitHub API
 LATEST_URL=$(curl -s https://api.github.com/repos/Run4j/run4j-agent/releases/latest \
   | grep "browser_download_url" \
-  | grep -E "run4j-agent.*\.jar" \
-  | cut -d '"' -f 4)
+  | grep -iE "run4j-agent.*\.jar" \
+  | cut -d '"' -f 4 | head -n 1)
 
+# Check if URL was found
+if [ -z "$LATEST_URL" ]; then
+  echo "❌ Failed to find the latest JAR URL."
+  exit 1
+fi
+
+# Download the latest JAR
+echo "⬇️ Downloading: $LATEST_URL"
 curl -Lo run4j-vps-agent-latest.jar "$LATEST_URL"
 
 ## Download latest agent JAR
