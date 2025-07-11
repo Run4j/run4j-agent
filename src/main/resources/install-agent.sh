@@ -32,10 +32,18 @@ fi
 mkdir -p /opt/run4j-agent
 cd /opt/run4j-agent
 
-# Download latest agent JAR
-curl -LO https://run4j.io/releases/run4j-vps-agent-latest.jar
-# or use private download:
-# curl -LO https://master.run4j.com/files/view/2
+
+# Download latest release JAR dynamically from GitHub
+LATEST_URL=$(curl -s https://api.github.com/repos/Run4j/run4j-agent/releases/latest \
+  | grep "browser_download_url" \
+  | grep -E "run4j-agent.*\.jar" \
+  | cut -d '"' -f 4)
+
+curl -Lo run4j-vps-agent-latest.jar "$LATEST_URL"
+
+## Download latest agent JAR
+#curl -LO https://run4j.io/releases/run4j-vps-agent-latest.jar
+
 
 # Create systemd service for the Run4j Agent
 cat <<EOF > /etc/systemd/system/run4j-agent.service
